@@ -108,6 +108,9 @@ export class FormController<T extends GenericState> {
       this.submitting = true;
       const res = await fetch(this.action, {
         method: 'POST',
+        headers: {
+          "content-type": 'application/json',
+        },
         body: JSON.stringify(this.state),
       });
       if (res.status === 500) {
@@ -161,7 +164,10 @@ export class FormController<T extends GenericState> {
 
     // Use the user changed value as long as it's available, otherwise provide
     // the text representation of state value
-    if (k === undefined) return toText(this.state[name]);
+    if (k === undefined) {
+      const def = this.def[name];
+      return def ? def.parser.toText(this.state[name]) : toText(this.state[name]);
+    }
 
     // @ts-ignore
     return k;
